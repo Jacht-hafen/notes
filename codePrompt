@@ -1,0 +1,18 @@
+Write a Python function:
+
+    def parse_csv_line(line: str) -> list[str]
+
+It splits a single CSV line into its fields. Rules:
+- The delimiter is the comma.
+- Fields may be enclosed in double quotes.
+- Inside a quoted field, a comma is treated as a regular character.
+- Inside a quoted field, "" represents a single double-quote character.
+- Empty fields produce an empty string.
+- Whitespace outside of quotes is preserved as-is.
+
+Do NOT use the csv module or any other library.
+
+Afterwards: write 6 assert statements that test your function,
+including at least two cases with escaped quotes.
+
+No explanation text, code only.
