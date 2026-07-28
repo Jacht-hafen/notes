@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kessel — Precision Tea Brewing Timer</title>
+<style>
+  :root {
+    --color-bg: #FAF6F1;
+    --color-surface: #FFFFFF;
+    --color-text: #2D1810;
+    --color-text-muted: #5C4A3A;
+    --color-primary: #B8734E;
+    --color-primary-hover: #9A5F3F;
+    --color-primary-active: #7D4C32;
+    --color-border: #DDD2C6;
+    --color-accent-bg: #F0E6D9;
+    --color-footer-bg: #2D1810;
+    --color-footer-text: #FAF6F1;
+    --color-focus-ring: #B8734E;
+
+    --font-size-xs: clamp(0.7rem, 1vw + 0.5rem, 0.8rem);
+    --font-size-sm: clamp(0.85rem, 1.2vw + 0.5rem, 0.95rem);
+    --font-size-base: clamp(0.95rem, 1.5vw + 0.5rem, 1.1rem);
+    --font-size-md: clamp(1.1rem, 2vw + 0.5rem, 1.3rem);
+    --font-size-lg: clamp(1.4rem, 2.5vw + 0.8rem, 1.8rem);
+    --font-size-xl: clamp(1.8rem, 3.5vw + 1rem, 2.8rem);
+    --font-size-xxl: clamp(2.2rem, 5vw + 1rem, 4rem);
+
+    --space-xs: clamp(0.4rem, 0.5vw + 0.3rem, 0.6rem);
+    --space-sm: clamp(0.6rem, 1vw + 0.4rem, 1rem);
+    --space-md: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+    --space-lg: clamp(1.5rem, 3vw + 0.8rem, 2.5rem);
+    --space-xl: clamp(2rem, 4vw + 1rem, 4rem);
+    --space-xxl: clamp(3rem, 6vw + 1.5rem, 6rem);
+
+    --max-width: 80rem;
+    --radius-sm: 0.4em;
+    --radius-md: 0.8em;
+    --radius-lg: 1.2em;
+    --nav-height: clamp(3.5rem, 4vw + 1rem, 4.5rem);
+
+    --focus-offset: -0.2em;
+    --transition-speed: 0.3s;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--font-size-base);
+    line-height: 1.65;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    outline: 0.2em solid var(--color-focus-ring);
+    outline-offset: var(--focus-offset);
+    border-radius: var(--radius-sm);
+  }
+
+  a:focus:not(:focus-visible),
+  button:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Skip link */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--space-sm);
+    background: var(--color-primary);
+    color: var(--color-footer-text);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    z-index: 100;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: var(--space-sm);
+  }
+
+  /* Navigation */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: var(--color-bg);
+    border-bottom: 0.1em solid var(--color-border);
+    height: var(--nav-height);
+  }
+
+  .nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--nav-height);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    font-weight: 700;
+  }
+
+  .nav-logo svg {
+    width: auto;
+    height: var(--space-lg);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+  }
+
+  .nav-links a:hover,
+  .nav-links a:focus-visible {
+    color: var(--color-primary);
+    background-color: var(--color-accent-bg);
+  }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-xs);
+    color: var(--color-text);
+  }
+
+  .nav-toggle svg {
+    width: auto;
+    height: var(--space-md);
+  }
+
+  /* Hero */
+  .hero {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .hero-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero-graphic {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-graphic svg {
+    width: clamp(12rem, 25vw, 28rem);
+    height: auto;
+  }
+
+  .hero-eyebrow {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+  }
+
+  .hero h1 {
+    font-size: var(--font-size-xxl);
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    font-size: var(--font-size-md);
+    color: var(--color-text-muted);
+    max-width: 38rem;
+    margin-bottom: var(--space-lg);
+    line-height: 1.55;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background-color: var(--color-primary);
+    color: var(--color-footer-text);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+  }
+
+  .cta-button:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-0.1em);
+  }
+
+  .cta-button:active {
+    background-color: var(--color-primary-active);
+    transform: translateY(0);
+  }
+
+  /* Features */
+  .features {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--space-md);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .section-header h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+  }
+
+  .section-header p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .feature-card {
+    background-color: var(--color-surface);
+    border: 0.1em solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: box-shadow var(--transition-speed), transform var(--transition-speed);
+  }
+
+  .feature-card:hover {
+    box-shadow: 0 0.4rem 1.5rem rgba(45, 24, 16, 0.08);
+    transform: translateY(-0.2em);
+  }
+
+  .feature-icon {
+    width: auto;
+    height: var(--space-xl);
+    margin-bottom: var(--space-md);
+    display: block;
+  }
+
+  .feature-card h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+  }
+
+  .feature-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  /* FAQ */
+  .faq {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--space-md);
+    background-color: var(--color-accent-bg);
+  }
+
+  .faq-list {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .accordion-item {
+    border-bottom: 0.1em solid var(--color-border);
+  }
+
+  .accordion-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    background: none;
+    border: none;
+    padding: var(--space-md) 0;
+    cursor: pointer;
+    text-align: left;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.4;
+    font-family: inherit;
+  }
+
+  .accordion-button:hover {
+    color: var(--color-primary);
+  }
+
+  .accordion-icon {
+    flex-shrink: 0;
+    width: auto;
+    height: var(--space-md);
+    transition: transform var(--transition-speed);
+  }
+
+  .accordion-button[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .accordion-panel {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height var(--transition-speed) ease, opacity var(--transition-speed) ease;
+    opacity: 0;
+  }
+
+  .accordion-panel[aria-hidden="false"] {
+    max-height: 20rem;
+    opacity: 1;
+  }
+
+  .accordion-panel p {
+    padding-bottom: var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.65;
+  }
+
+  /* Footer */
+  .footer {
+    background-color: var(--color-footer-bg);
+    color: var(--color-footer-text);
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-md);
+    font-weight: 700;
+  }
+
+  .footer-brand svg {
+    width: auto;
+    height: var(--space-md);
+  }
+
+  .footer-text {
+    font-size: var(--font-size-xs);
+    color: rgba(250, 246, 241, 0.7);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: var(--space-md);
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: rgba(250, 246, 241, 0.7);
+    text-decoration: none;
+    font-size: var(--font-size-xs);
+    transition: color var(--transition-speed);
+  }
+
+  .footer-links a:hover {
+    color: var(--color-footer-text);
+  }
+
+  /* Mobile nav overlay */
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(45, 24, 16, 0.5);
+    z-index: 49;
+  }
+
+  .nav-overlay.active {
+    display: block;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .nav-links {
+      position: fixed;
+      top: var(--nav-height);
+      right: 0;
+      width: clamp(14rem, 85vw, 20rem);
+      height: calc(100vh - var(--nav-height));
+      background-color: var(--color-surface);
+      flex-direction: column;
+      align-items: stretch;
+      padding: var(--space-lg) var(--space-md);
+      gap: var(--space-xs);
+      border-left: 0.1em solid var(--color-border);
+      transform: translateX(100%);
+      transition: transform var(--transition-speed) ease;
+      z-index: 50;
+    }
+
+    .nav-links.open {
+      transform: translateX(0);
+    }
+
+    .nav-links a {
+      font-size: var(--font-size-base);
+      padding: var(--space-sm) var(--space-md);
+    }
+
+    .nav-toggle {
+      display: block;
+    }
+
+    .hero {
+      flex-direction: column-reverse;
+      text-align: center;
+      padding-top: var(--space-xl);
+    }
+
+    .hero p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 360px) {
+    body {
+      font-size: var(--font-size-xs);
+    }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- Navigation -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Kessel home">
+      <svg viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="4" y="18" width="16" height="14" rx="2" fill="#B8734E"/>
+        <ellipse cx="12" cy="18" rx="9" ry="5" fill="#C4845A"/>
+        <path d="M6 10 C6 6, 18 6, 18 10" stroke="#B8734E" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <line x1="10" y1="8" x2="10" y2="3" stroke="#DDD2C6" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="14" y1="8" x2="14" y2="4" stroke="#DDD2C6" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Kessel
+    </a>
+
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <ul class="nav-links" id="nav-menu" role="list">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#" class="cta-button" style="padding: 0.4em var(--space-md); font-size: var(--font-size-sm);">Get Kessel</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<main id="main">
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Precision Brewing, Simplified</p>
+    <h1 id="hero-heading">Brew the perfect cup, every time.</h1>
+    <p>Kessel is a smart tea brewing timer that knows exactly when your water reaches the right temperature and steeps for the ideal duration — so you never overbrew again.</p>
+    <a href="#" class="cta-button">
+      Order Kessel Now
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+  </div>
+  <div class="hero-graphic">
+    <!-- Tea cup / timer illustration -->
+    <svg viewBox="0 0 280 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kessel tea brewing device illustration">
+      <!-- Saucer -->
+      <ellipse cx="140" cy="268" rx="95" ry="14" fill="#E8DFD5"/>
+      <ellipse cx="140" cy="266" rx="85" ry="10" fill="#F0E6D9"/>
+
+      <!-- Cup body -->
+      <path d="M70 130 Q70 260, 110 265 L170 265 Q210 260, 210 130 Z" fill="#C4845A"/>
+      <path d="M75 130 Q75 256, 112 261 L168 261 Q205 256, 205 130 Z" fill="#D4956A"/>
+
+      <!-- Cup rim -->
+      <ellipse cx="140" cy="130" rx="72" ry="12" fill="#E8B88A"/>
+      <ellipse cx="140" cy="130" rx="65" ry="9" fill="#C49555"/>
+
+      <!-- Tea liquid -->
+      <ellipse cx="140" cy="133" rx="58" ry="7" fill="#8B6E4E"/>
+
+      <!-- Steam lines -->
+      <path d="M115 118 Q112 95, 118 75 Q124 55, 115 35" stroke="#DDD2C6" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="3s" repeatCount="indefinite" values="M115 118 Q112 95, 118 75 Q124 55, 115 35; M115 118 Q118 95, 112 75 Q106 55, 115 35; M115 118 Q112 95, 118 75 Q124 55, 115 35"/>
+      </path>
+      <path d="M140 115 Q136 90, 142 68 Q148 46, 138 25" stroke="#DDD2C6" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M140 115 Q136 90, 142 68 Q148 46, 138 25; M140 115 Q142 90, 136 68 Q130 46, 140 25; M140 115 Q136 90, 142 68 Q148 46, 138 25"/>
+      </path>
+      <path d="M165 118 Q162 95, 168 75 Q174 55, 165 35" stroke="#DDD2C6" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M165 118 Q162 95, 168 75 Q174 55, 165 35; M165 118 Q168 95, 162 75 Q156 55, 165 35; M165 118 Q162 95, 168 75 Q174 55, 165 35"/>
+      </path>
+
+      <!-- Handle -->
+      <path d="M210 155 Q245 155, 245 190 Q245 225, 210 225" stroke="#C4845A" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M210 158 Q240 158, 240 190 Q240 222, 210 222" stroke="#D4956A" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+      <!-- Timer display on cup -->
+      <rect x="118" y="175" width="44" height="28" rx="4" fill="#2D1810"/>
+      <text x="140" y="195" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#B8734E">3:00</text>
+
+      <!-- Leaf decoration -->
+      <path d="M90 200 Q85 190, 92 185 Q99 180, 95 190 Z" fill="#7A9B6D" opacity="0.6"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features" aria-labelledby="features-heading">
+  <div class="section-header">
+    <h2 id="features-heading">Everything you need for the perfect brew</h2>
+    <p>Kessel combines precision engineering with elegant simplicity to transform your daily tea ritual.</p>
+  </div>
+
+  <div class="features-grid" role="list">
+    <!-- Feature 1 -->
+    <article class="feature-card" role="listitem">
+      <svg class="feature-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="28" stroke="#B8734E" stroke-width="3"/>
+        <circle cx="32" cy="32" r="22" fill="#F0E6D9"/>
+        <line x1="32" y1="16" x2="32" y2="32" stroke="#B8734E" stroke-width="3" stroke-linecap="round"/>
+        <
