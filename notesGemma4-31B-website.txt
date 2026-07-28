@@ -1,0 +1,3 @@
+3.94 tok/sec
+5107 tokens total
+2.5 sekunden to first token
