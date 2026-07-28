@@ -1,0 +1,19 @@
+Create a complete, self-contained HTML file (HTML + CSS + JS inline,
+no external dependencies, no CDN, no external images) for the landing
+page of a fictional product: "Kessel" — a tea brewing timer.
+
+Requirements:
+1. Sections: Hero (headline, subline, one CTA), 3 feature cards,
+   FAQ with 4 questions as expandable accordions, footer.
+2. The accordion must work without external libraries and be keyboard
+   accessible (Enter/Space, visible focus ring).
+3. Responsive: below 700px the feature cards become single-column and
+   the navigation collapses. No horizontal scrolling at 360px width.
+4. Define a color palette and type scale as CSS Custom Properties at
+   :root and use exclusively those variables — no hardcoded color values
+   or pixel sizes anywhere else in the stylesheet.
+5. Text/background contrast ratio of at least 4.5:1.
+6. All graphics as inline SVG. No emojis as icon substitutes.
+
+Output the code only, no explanation.
+Then in at most 5 sentences: which design decisions you made and why.
