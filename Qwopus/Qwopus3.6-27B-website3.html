@@ -1,1 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kessel — The Ultimate Tea Brewing Timer</title>
+<style>
+:root {
+  /* Color Palette */
+  --color-bg: #1c1a17;
+  --color-surface: #2b2620;
+  --color-text-main: #f4efe6;
+  --color-text-muted: #b8a999;
+  --color-accent: #B35900;
+  --color-focus-ring: #ffffff;
+  --color-text-on-accent: #1c1a17;
 
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+  --container-padding: var(--space-lg);
+
+  /* Type Scale */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-md: 1.25rem;
+  --font-lg: 1.5rem;
+  --font-xl: 2rem;
+  --font-2xl: 3rem;
+
+  /* Sizing & Layout */
+  --border-width: var(--space-xs);
+  --border-radius: var(--space-sm);
+  --container-max-width: 70ch;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.container {
+  width: var(--container-max-width);
+  max-width: 100%;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Navigation */
+nav ul {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+nav a, nav button {
+  font-size: var(--font-sm);
+  color: var(--color-text-main);
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+nav a:hover, nav button:hover {
+  color: var(--color-accent);
+}
+
+@media (max-width: 700px) {
+  nav ul {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}
+
+/* Focus Ring */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--space-sm) var(--color-focus-ring);
+}
+
+button:focus-visible, a:focus-visible {
+  outline: var(--border-width) solid transparent;
+  box-shadow: 0 0 0 var(--space-sm) var(--color-focus-ring);
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.hero-content {
+  max-width: var(--container-max-width);
+}
+
+.hero h1 {
+  font-size: var(--font-2xl);
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+}
+
+.hero p {
+  font-size: var(--font-lg);
+  color: var(--color-text-muted);
+  max-width: 45ch;
+  margin-bottom: var(--space-lg);
+}
+
+.cta-button {
+  display: inline-block;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-size: var(--font-base);
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: background-color var(--space-xs) ease-in-out;
+}
+
+.cta-button:hover {
+  background-color: #cc6800;
+}
+
+/* Features Section */
+.features {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.features h2 {
+  font-size: var(--font-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.feature-cards {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 700px) {
+  .feature-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  
+  .hero p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.feature-card {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+}
+
+.feature-card h3 {
+  font-size: var(--font-md);
+  margin-bottom: var(--space-sm);
+  color: var(--color-accent);
+}
+
+.feature-card p {
+  font-size: var(--font-base);
+  color: var(--color-text-muted);
+}
+
+/* FAQ Section */
+.faq {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.faq h2 {
+  font-size: var(--font-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.accordion-item + .accordion-item {
+  margin-top: var(--space-md);
+}
+
+.accordion-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: transparent;
+  color: var(--color-text-main);
+  font-size: var(--font-base);
+  font-weight: bold;
+  text-align: left;
+  padding: var(--space-md) 0;
+  border: none;
+  border-bottom: var(--border-width) solid var(--color-surface);
+}
+
+.accordion-trigger:hover {
+  color: var(--color-accent);
+}
+
+.accordion-panel {
+  display: none;
+  padding-top: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.accordion-panel p {
+  font-size: var(--font-base);
+  color: var(--color-text-muted);
+}
+
+/* Footer */
+footer {
+  background-color: var(--color-surface);
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  margin-top: auto;
+}
+
+footer p {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<header class="container">
+  <nav aria-label="Main Navigation">
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><button aria-label="Toggle Menu" type="button"></button></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section id="hero" class="container hero">
+    <div class="hero-content">
+      <h1>Brewing Mastery,<br>Timed to Perfection.</h1>
+      <p>Kessel takes the guesswork out of your tea ritual. Precision timing for every leaf, temperature, and steep.</p>
+      <a href="#" class="cta-button" role="button">Start Brewing</a>
+    </div>
+    
+    <!-- Inline SVG Hero Graphic -->
+    <svg aria-hidden="true" focusable="false" width="150" height="160" viewBox="0 0 150 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Kettle Body -->
+      <path d="M40 90 C40 50, 75 40, 80 40 L80 40 C120 40, 110 50, 110 90 C110 130, 100 145, 80 145 C60 145, 40 130, 40 90 Z" fill="var(--color-surface)" stroke="var(--color-text-muted)" stroke-width="2"/>
+      <!-- Kettle Spout -->
+      <path d="M80 65 C95 65, 105 75, 105 90" fill="none" stroke="var(--color-text-muted)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Kettle Handle -->
+      <path d="M80 45 C65 30, 35 40, 40 70" fill="none" stroke="var(--color-text-muted)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Steam Lines -->
+      <path d="M65 15 Q70 5, 80 15 T90 15" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round">
+        <animate attributeName="d" values="M65 15 Q70 5, 80 15 T90 15; M65 15 Q75 25, 80 15 T90 15; M65 15 Q70 5, 80 15 T90 15" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <path d="M85 10 Q90 0, 100 10 T110 10" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round">
+        <animate attributeName="d" values="M85 10 Q90 0, 100 10 T110 10; M85 10 Q95 20, 100 10 T110 10; M85 10 Q90 0, 100 10 T110 10" dur="4s" repeatCount="indefinite"/>
+      </path>
+    </svg>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="container features">
+    <h2>Why Kessel?</h2>
+    <div class="feature-cards">
+      <!-- Feature 1: Timer Icon -->
+      <article class="feature-card">
+        <svg aria-hidden="true" focusable="false" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="16" stroke="var(--color-accent)" stroke-width="2"/>
+          <path d="M20 8 L20 20 L27 25" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3>Precision Timing</h3>
+        <p>No more over-steeping. Kessel tracks seconds with absolute accuracy, ensuring your tea is never bitter or bland.</p>
+      </article>
+
+      <!-- Feature 2: Leaf Icon -->
+      <article class="feature-card">
+        <svg aria-hidden="true" focusable="false" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 35 C10 35, 5 20, 20 5 C35 20, 30 35, 30 35" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 5 L20 35" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h3>Leaf Intelligence</h3>
+        <p>Built-in profiles for over 100 tea varieties. Kessel knows the exact water temperature and steep time for your favorite leaves.</p>
+      </article>
+
+      <!-- Feature 3: Droplet Icon -->
+      <article class="feature-card">
+        <svg aria-hidden="true" focusable="false" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 5 C20 5, 8 20, 8 27 C8 33.6, 13.4 39, 20 39 C26.6 39, 32 33.6, 32 27 C32 20, 20 5, 20 5 Z" stroke="var(--color-accent)" stroke-width="2"/>
+        </svg>
+        <h3>Water Harmony</h3>
+        <p>Synchronize Kessel with your kettle. It alerts you when the water hits the perfect temperature before pouring.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="container faq">
+    <h2>Frequently Asked Questions</h2>
+    
+    <div class="accordion-item">
+      <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-1" id="trigger-faq-1">
+        Does Kessel work with all types of tea?
+        <!-- Chevron SVG -->
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 8 L10 13 L15 8" stroke="var(--color-text-main)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div id="faq-1" class="accordion-panel" role="region" aria-labelledby="trigger-faq-1">
+        <p>Yes! Kessel includes default profiles for black, green, oolong, white, and herbal teas. You can also create custom profiles for rare or specialty blends.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-2" id="trigger-faq-2">
+        Can I use Kessel without an internet connection?
+        <!-- Chevron SVG -->
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 8 L10 13 L15 8" stroke="var(--color-text-main)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div id="faq-2" class="accordion-panel" role="region" aria-labelledby="trigger-faq-2">
+        <p>Absolutely. All core timing and temperature features work completely offline on your device.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-3" id="trigger-faq-3">
+        How does Kessel integrate with smart kettles?
+        <!-- Chevron SVG -->
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 8 L10 13 L15 8" stroke="var(--color-text-main)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div id="faq-3" class="accordion-panel" role="region" aria-labelledby="trigger-faq-3">
+        <p>Kessel connects via Bluetooth Low Energy (BLE) to supported smart kettles, sending precise temperature targets and receiving real-time feedback.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-4" id="trigger-faq-4">
+        Is there a subscription fee?
+        <!-- Chevron SVG -->
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 8 L10 13 L15 8" stroke="var(--color-text-main)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div id="faq-4" class="accordion-panel" role="region" aria-labelledby="trigger-faq-4">
+        <p>No. Kessel is a one-time purchase with free lifetime updates to our core timing engine and tea database.</p>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<footer class="container">
+  <p>&copy; 2023 Kessel Brewing. All rights reserved.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.accordion-trigger').forEach(button => {
+    button.addEventListener('click', () => {
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', !isExpanded);
+      
+      const panelId = button.getAttribute('aria-controls');
+      const panel = document.getElementById(panelId);
+      
+      if (!isExpanded) {
+        panel.style.display = 'block';
+      } else {
+        panel.style.display = 'none';
+      }
+    });
+
+    // Keyboard Accessibility (Enter and Space are natively handled by <button> elements, 
+    // but we ensure focus stays on the trigger)
+    button.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        button.click();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
