@@ -1,1 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kessel — Tea Brewing Timer</title>
+  <style>
+    :root {
+      --color-bg: #fafaf9;
+      --color-surface: #ffffff;
+      --color-text-primary: #2d3730;
+      --color-text-secondary: #5c6b64;
+      --color-accent: #d69e2e;
+      --color-accent-light: #f0b86a;
+      --color-accent-dark: #a0781c;
+      --color-border: #e8e4dc;
+      --color-card-bg: #fdffe5;
+      --color-focus-ring: #d69e2e;
+      --color-section-bg: #f5f0eb;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
 
+      --fs-xs: 0.875rem;
+      --fs-sm: 1rem;
+      --fs-base: 1.125rem;
+      --fs-lg: 1.375rem;
+      --fs-xl: 1.625rem;
+      --fs-2xl: 2rem;
+      --fs-3xl: 2.5rem;
+
+      --sp-xs: 0.5rem;
+      --sp-sm: 0.75rem;
+      --sp-base: 1rem;
+      --sp-lg: 1.25rem;
+      --sp-xl: 1.5rem;
+      --sp-2xl: 2rem;
+
+      --nav-height: 64px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      min-width: 360px;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    .container { width: 92vw; margin: 0 auto; padding-inline: var(--sp-xs); }
+
+    /* ── Navigation ─────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: var(--sp-lg);
+      background-color: rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border);
+      z-index: 100;
+    }
+
+    .nav__logo { display: flex; align-items: center; gap: var(--sp-sm); font-weight: 700; font-size: var(--fs-xl); color: var(--color-text-primary); text-decoration: none; }
+    .nav__logo svg { width: var(--sp-lg); height: auto; }
+
+    .nav__menu { display: flex; align-items: center; gap: var(--sp-xl); }
+    .nav__link { font-size: var(--fs-base); color: var(--color-text-secondary); text-decoration: none; padding-block: var(--sp-sm); font-weight: 500; transition-colors 0.15s; }
+    .nav__link:hover, .nav__link:focus-visible { color: var(--color-accent); outline: none; }
+
+    .nav__hamburger { display: none; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: var(--sp-xs); }
+    .nav__hamburger span { width: var(--sp-base); height: 2.5px; background-color: var(--color-text-primary); border-radius: 1px; transition-transform 0.3s, opacity 0.3s; }
+
+    /* ── Hero Section ───────────────────────────────────── */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - var(--nav-height));
+      text-align: center;
+      padding-block: var(--sp-2xl);
+    }
+
+    .hero__content { max-width: 64rem; width: 95%; margin-inline: auto; }
+
+    .hero__badge { display: inline-flex; align-items: center; gap: var(--sp-sm); background-color: #f0e6d8; padding-block: var(--sp-xs) var(--sp-base); border-radius: 100px; font-size: var(--fs-xs); color: var(--color-accent-dark); margin-bottom: var(--sp-lg); }
+
+    .hero__title {
+      font-size: var(--fs-3xl);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+      margin-bottom: var(--sp-base);
+      max-width: 48rem;
+    }
+
+    .hero__sub {
+      font-size: var(--fs-lg);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--sp-xl);
+      max-width: 36rem;
+      margin-inline: auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding-block: var(--sp-base) var(--sp-lg);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      transition-colors 0.2s, transform 0.15s;
+    }
+
+    .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent-dark); outline-offset: 4px; }
+
+    .hero__svg { margin-top: var(--sp-2xl); display: block; margin-inline: auto; }
+
+    /* ── Feature Cards ──────────────────────────────────── */
+    .features { padding-block: var(--sp-2xl); background-color: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+
+    .features__title { text-align: center; font-size: var(--fs-xl); color: var(--color-text-primary); margin-bottom: var(--sp-2xl); max-width: 30rem; margin-inline: auto; }
+
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap-block: var(--sp-lg);
+      gap-inline: var(--sp-lg);
+    }
+
+    .feature-card {
+      background-color: var(--color-card-bg);
+      border-radius: var(--radius-md);
+      padding-block: var(--sp-xl) var(--sp-lg);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(45,55,48,0.1); }
+
+    .feature-card__icon { margin-bottom: var(--sp-base); display: inline-block; }
+    .feature-card__title { font-size: var(--fs-lg); color: var(--color-text-primary); margin-bottom: var(--sp-sm); }
+    .feature-card__text { font-size: var(--fs-sm); color: var(--color-text-secondary); }
+
+    /* ── FAQ Section ────────────────────────────────────── */
+    .faq { padding-block: var(--sp-2xl); background-color: var(--color-section-bg); border-top: 1px solid var(--color-border); }
+
+    .faq__title { text-align: center; font-size: var(--fs-xl); color: var(--color-text-primary); margin-bottom: var(--sp-2xl); max-width: 30rem; margin-inline: auto; }
+
+    .accordion-item {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .accordion__trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-block: var(--sp-base) var(--sp-lg);
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: var(--fs-base);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      text-align: left;
+      gap-block: var(--sp-xs) var(--sp-lg);
+    }
+
+    .accordion__trigger:focus-visible { outline: none; }
+
+    .accordion__trigger[aria-expanded="true"] { margin-right: 0.2em; }
+
+    .accordion__chevron {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: var(--sp-sm);
+      height: var(--sp-base);
+      flex-shrink: 0;
+    }
+
+    .accordion__chevron span {
+      width: var(--sp-xs);
+      height: 2px;
+      background-color: var(--color-text-secondary);
+      border-radius: 1px;
+      transition-transform 0.3s, opacity 0.3s;
+      transform-origin: center;
+    }
+
+    .accordion__trigger[aria-expanded="true"] .accordion__chevron span:nth-child(2) { transform: rotate(45deg); opacity: 1; }
+    .accordion__trigger[aria-expanded="false"] .accordion__chevron span:nth-child(2) { opacity: 0; }
+
+    .accordion__content {
+      max-height: 0;
+      overflow: hidden;
+      transition-max-height: 0.4s;
+    }
+
+    .accordion__content__inner { padding-block: var(--sp-base); color: var(--color-text-secondary); font-size: var(--fs-sm); line-height: 1.75; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer { padding-block: var(--sp-xl); text-align: center; border-top: 1px solid var(--color-border); background-color: var(--color-section-bg); margin-top: var(--sp-2xl); }
+
+    .footer__text { font-size: var(--fs-sm); color: var(--color-text-secondary); }
+    .footer__link { color: var(--color-accent); text-decoration: none; font-weight: 500; }
+    .footer__link:hover, .footer__link:focus-visible { outline: 2px solid var(--color-accent-dark); outline-offset: 2px; border-radius: 3px; padding-block: 2px; padding-inline: 4px; }
+
+    /* ── Responsive — below 700px ────────────────────────── */
+    @media (max-width: 699.98px) {
+      .nav__menu { display: none; }
+      .features__grid { grid-template-columns: 1fr; max-width: 34rem; margin-inline: auto; width: 100%; }
+    }
+
+    /* ── Responsive — below 520px — collapse nav to hamburger ── */
+    @media (max-width: 520px) {
+      .nav__hamburger { display: flex; align-items: center; justify-content: center; }
+      .nav__logo { padding-right: var(--sp-lg); }
+    }
+
+    /* Prevent overflow at the narrowest width */
+    @media (max-width: 360px) {
+      body, html { max-width: 100%; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ════════════ Navigation ════════════ -->
+<nav role="banner">
+  <a href="#" class="nav__logo" aria-label="Kessel home">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 4c-7 0-13 8-13 16s8 12 13 12 13-8 13-16C31 20 25 12 16 12.01C19 14.52 20.7 17 20.7 18h-0.31c-.45.43-.75.79-.75 1.19s.3.43.75.79z"/></svg>
+    Kessel
+  </a>
+  <div class="nav__menu" role="menubar">
+    <a href="#features" role="menuitem" class="nav__link">Features</a>
+    <a href="#faq" role="menuitem" class="nav__link">FAQ</a>
+    <a href="#" role="menuitem" class="nav__link">Get One</a>
+  </div>
+  <button class="nav__hamburger" aria-label="Toggle menu" aria-expanded="false" tabindex="0">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ════════ Hero ════════════ -->
+<main role="main">
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero__content">
+        <span class="hero__badge"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7"/><path d="M8.5 14c-.2 0-.35-.15-.35-.35s.05-.35.35-.35 1 .1 1 .35l6-6L9 1v-7h-4V1l-3.84.9a3.25 3.25 0 0 1 1.93 7z"/></svg> Now in stores</span>
+        <h1 class="hero__title">Brew the perfect cup, every single time.</h1>
+        <p class="hero__sub">Kessel is a precision tea brewing timer that connects to your phone, tracks steep time, and lets you leave it on the counter without stress.</p>
+        <a href="#" class="btn" style="margin-inline: auto;">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 3.5l6.93 6.93a2.12 2.12 0 0 0-3 3L14 22l-8.5-8.5 1.5-1.5a2.12 2.12 0 0 0 0-3z"/></svg>
+          Get Kessel
+        </a>
+
+        <svg class="hero__svg" viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Tea leaves floating -->
+          <g opacity="0.15"><path d="M90 270c8 12,26 10,38-2l4 12h20v-2L218 188c0 5,-2 7,-4 9C148 265,128 235,128 218l-2-10c-2-3-5-4.5-8-6z"/></g>
+          <path d="M200 256c7 10,25 8,34-1l5 12h16v-2L258 179c0 5,-2 8,-4 9C176 262,156 235,156 218l-2-10C150 243,140 256,140 270z"/></g>
+          <path d="M195 282c14 12,28 9,38-1l5 10h16v-1L258 172c0 4,-2 5.5,-4 7C190 272,172 248,172 227l-2-8C175 258,170 273,168 292z"/></g>
+          <!-- Teapot -->
+          <path d="M160 300c-40 0-44 45-16 68l16 5C160 323,176 306,192 300H240c12 0 16-37 12-78.99L196 102C178 130 152 132 134 118l-14 5h-4L24 120c-2 16,2 36,12 51.01l16 79z" stroke="#d69e2e" fill="none" stroke-width="2"/>
+          <path d="M186 122v84L160 102c-5 2-10 3-14 2l-2 5H14V78C14.5 96 21 108 36 111l5-2z" stroke="#d69e2e" fill="none" stroke-width="2"/>
+          <path d="M178 122v2h10V122z" stroke="#d69e2e" fill="none" stroke-width="2"/>
+          <!-- Steam -->
+          <g opacity="0.5">
+            <path d="M130 80 Q120 45 118 20 128 55 136 25 L142 75 L140 95L148 80 L155 55 155 20 145 55 135 35z"/>
+            <path d="M160 95 Q165 60 175 45 185 60 185 100 L178 85 L172 70L178 85 L172 95L185 110 L185 90"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ Feature Cards ─═══════════ -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2 class="features__title">Three reasons to love Kessel</h2>
+      <div class="features__grid">
+        <!-- Card 1: Phone sync -->
+        <article class="feature-card">
+          <svg class="feature-card__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="26" height="26" rx="4" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="18" r="9" fill="#f0e6d8"/></svg>
+          <h3 class="feature-card__title">Syncs to your phone</h3>
+          <p class="feature-card__text">Kessel connects via Bluetooth. Get a haptic tap the moment your tea is ready, even if you're on another room.</p>
+        </article>
+
+        <!-- Card 2: Multi-leaf profiles -->
+        <article class="feature-card">
+          <svg class="feature-card__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="15" x2="27" y2="15" stroke="currentColor" stroke-width="1.5"/><path d="M18 20v6M18 14v-6M6 18h12M30 18H18"/></svg>
+          <h3 class="feature-card__title">Presets for every leaf</h3>
+          <p class="feature-card__text">Green, black, oolong — each tea has its own ideal temperature and steep time. Kessel learns what you like.</p>
+        </article>
+
+        <!-- Card 3: Timer continues without power -->
+        <article class="feature-card">
+          <svg class="feature-card__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.5"/><path d="M9 12l6-6m0 0l6 6M27 12L18 18M18 18l9-9"/></svg>
+          <h3 class="feature-card__title">Reliable, no battery needed</h3>
+          <p class="feature-card__text">Powered by a tiny coin cell that lasts four years. The timer keeps running if your phone dies.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FAQ Accordion ─═══════ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <h2 class="faq__title">Frequently asked questions</h2>
+
+      <!-- FAQ Item 1 -->
+      <div class="accordion-item" role="region" aria-labelledby="faq-1">
+        <button class="accordion__trigger" id="faq-1" aria-expanded="false" tabindex="0">
+          Does it work with my existing teapot?
+          <svg class="accordion__chevron" viewBox="0 0 12 8" fill="none"><line x1="4" y1="1" x2="8" y2="7"/><line x1="8" y1="1" x2="4" y2="7"/></svg>
+        </button>
+        <div class="accordion__content">
+          <div class="accordion__content__inner">Yes. Kessel sits on top of any teapot, kettle, or infuser cup — it's designed to be a universal timer that works with your existing brewing equipment.</div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 2 -->
+      <div class="accordion-item" role="region" aria-labelledby="faq-2">
+        <button class="accordion__trigger" id="faq-2" aria-expanded="false" tabindex="0">
+          How long does the battery last?
+          <svg class="accordion__chevron" viewBox="0 0 12 8" fill="none"><line x1="4" y1="1" x2="8" y2="7"/><line x1="8" y1="1" x2="4" y2="7"/></svg>
+        </button>
+        <div class="accordion__content">
+          <div class="accordion__content__inner">Kessel runs on a small coin cell battery rated for four years of daily use. If you're worried, we've included a spare in the box and the packaging clearly marks where it goes.</div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 3 -->
+      <div class="accordion-item" role="region" aria-labelledby="faq-3">
+        <button class="accordion__trigger" id="faq-3" aria-expanded="false" tabindex="0">
+          Does it work with my smart home?
+          <svg class="accordion__chevron" viewBox="0 0 12 8" fill="none"><line x1="4" y1="1" x2="8" y2="7"/><line x1="8" y1="1" x2="4" y2="7"/></svg>
+        </button>
+        <div class="accordion__content">
+          <div class="accordion__content__inner">Right now Kessel works exclusively with your iPhone or Android via Bluetooth. We're planning native HomeKit and Matter integration for the next firmware release, expected late 2025.</div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 4 -->
+      <div class="accordion-item" role="region" aria-labelledby="faq-4">
+        <button class="accordion__trigger" id="faq-4" aria-expanded="false" tabindex="0">
+          Where can I buy Kessel?
+          <svg class="accordion__chevron" viewBox="0 0 12 8" fill="none"><line x1="4" y1="1" x2="8" y2="7"/><line x1="8" y1="1" x2="4" y2="7"/></svg>
+        </button>
+        <div class="accordion__content">
+          <div class="accordion__content__inner">Kessel is available online at kesseltimer.com. We also have a small selection of retail partners in major cities including New York, London, and Tokyo. Find a store near you on the site.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ Footer ─═══════ -->
+  <footer role="contentinfo">
+    <div class="container">
+      <p class="footer__text">&copy; 2025 Kessel. All rights reserved. <a href="#" class="footer__link">Privacy</a> · <a href="#" class="footer__link">Terms</a></p>
+    </div>
+  </footer>
+
+<script>
+(() => {
+  const triggers = document.querySelectorAll('.accordion__trigger');
+
+  // Expand/collapse for click and keyboard events
+  function handleAccordion(e) {
+    if (e.type === 'keydown') return;
+    const trigger = e.target.closest('.accordion-item')?.querySelector('button');
+    if (!trigger) return;
+    const expanded = trigger.getAttribute('aria-expanded') === 'true';
+    trigger.setAttribute('aria-expanded', !expanded);
+  }
+
+  triggers.forEach(btn => {
+    btn.addEventListener('click', handleAccordion);
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const item = btn.closest('.accordion-item');
+        let expanded = item.querySelector('button').getAttribute('aria-expanded') === 'true';
+        item.querySelector('button').setAttribute('aria-expanded', !expanded);
+
+        // Animate height: auto means the browser calculates it, then we clamp with max-height transition
+        const content = btn.nextElementSibling;
+        if (!expanded) {
+          content.style.maxHeight = '0px';
+        } else {
+          content.style.maxHeight = 'auto';
+        }
+      }
+    });
+
+    // Visible focus ring
+    btn.addEventListener('focus', () => btn.classList.add('is-focused'));
+    btn.addEventListener('blur', () => btn.classList.remove('is-focused'));
+  });
+})();
+</script>
+
+</body>
+</html>
