@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kessel | The Perfect Steep</title>
+    <style>
+        :root {
+            /* Color Palette */
+            --color-bg: #F9F7F2;
+            --color-text: #1B3022;
+            --color-text-muted: #4A5D4E;
+            --color-primary: #1B3022;
+            --color-accent: #C48D3E;
+            --color-white: #FFFFFF;
+            --color-border: #DCD9D0;
+            --color-focus: #C48D3E;
+
+            /* Type Scale */
+            --fs-h1: 3.5rem;
+            --fs-h2: 2.5rem;
+            --fs-h3: 1.75rem;
+            --fs-body: 1rem;
+            --fs-sm: 0.875rem;
+
+            /* Spacing Scale */
+            --sp-xs: 0.5rem;
+            --sp-s: 1rem;
+            --sp-m: 2rem;
+            --sp-l: 4rem;
+            --sp-xl: 6rem;
+
+            /* Layout/Other */
+            --max-width: 1100px;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1 { font-size: var(--fs-h1); line-height: 1.1; margin-bottom: var(--sp-s); }
+        h2 { font-size: var(--fs-h2); margin-bottom: var(--sp-m); }
+        h3 { font-size: var(--fs-h3); margin-bottom: var(--sp-xs); }
+        p { font-size: var(--fs-body); color: var(--color-text-muted); }
+
+        /* Layout Components */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--sp-m);
+        }
+
+        section { padding: var(--sp-l) var(--sp-m); }
+
+        /* Navigation */
+        nav {
+            background-color: var(--color-white);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px; /* Using constant for layout height is standard */
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: var(--fs-h3);
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--sp-m);
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 500;
+            font-size: var(--fs-sm);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--sp-xs);
+        }
+
+        /* Hero Section */
+        #hero {
+            text-align: center;
+            padding: var(--sp-xl) var(--sp-m);
+            background: linear-gradient(to bottom, #F9F7F2, #EBE8DE);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            padding: var(--sp-s) var(--sp-l);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: bold;
+            margin-top: var(--sp-m);
+            transition: transform 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--sp-m);
+        }
+
+        .card {
+            background: var(--color-white);
+            padding: var(--sp-l) var(--sp-m);
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--sp-s) auto;
+            fill: var(--color-accent);
+        }
+
+        /* FAQ Accordion */
+        .faq-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-m) 0;
+            background: none;
+            border: none;
+            color: var(--color-text);
+            font-size: var(--fs-h3);
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .accordion-trigger:focus-visible {
+            box-shadow: inset 0 0 0 2px var(--color-focus);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 200px;
+            padding-bottom: var(--sp-m);
+        }
+
+        .chevron {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--sp-l) var(--sp-m);
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            font-size: var(--fs-sm);
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: var(--color-white);
+                padding: var(--sp-m);
+                border-bottom: 1px solid var(--color-border);
+            }
+            .nav-links.is-open {
+                display: flex;
+            }
+            .nav-toggle {
+                display: block;
+            }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+        }
+
+        @media (max-width: 360px) {
+            :root { --fs-h1: 2.2rem; }
+            section { padding: var(--sp-m) var(--sp-s); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav aria-label="Main Navigation">
+        <div class="container nav-content">
+            <a href="#" class="logo">Kessel</a>
+            <button class="nav-toggle" aria-label="Toggle Menu" aria-expanded="false">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#">Shop</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hero">
+            <div class="container">
+                <h1>Master the art of the steep.</h1>
+                <p>Precision timing for tea connoisseurs. Never over-steep your favorite leaves again.</p>
+                <a href="#" class="cta-button">Order Kessel Now</a>
+            </div>
+        </section>
+
+        <section id="features">
+            <div class="container">
+                <h2>Why Kessel?</h2>
+                <div class="features-grid">
+                    <div class="card">
+                        <div class="icon-wrapper">
+                            <svg viewBox="0 0 24 24"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.66,22A22,22 0 0,0 10,16.5C10,16.5 10,16.5 10,16.5C11.62,18.75 13.41,20 15.41,20C17.41,20 19.2,18.75 20.83,17C22.46,15.25 22,13.46 22,13.46C22,13.46 22,11.67 20.14,9.83C18.27,8 17,8 17,8Z"/></svg>
+                        </div>
+                        <h3>Perfect Timing</h3>
+                        <p>Advanced sensors detect tea infusion levels to alert you at the exact moment.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-wrapper">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        </div>
+                        <h3>Smart Alerts</h3>
+                        <p>Gentle haptic and visual cues that respect the peace of your tea session.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-wrapper">
+                            <svg viewBox="0 0 24 24"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg>
+                        </div>
+                        <h3>Elegant Design</h3>
+                        <p>A minimalist aesthetic that complements any modern tea service.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq">
+            <div class="container">
+                <h2>Common Questions</h2>
+                <div class="faq-container">
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false">
+                            How does it work?
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p>Kessel uses infrared sensors to monitor water density changes during infusion, providing real-time accuracy.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false">
+                            Is it compatible with loose leaf?
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p>Yes, Kessel works with any brewing method including loose leaf in infusers or tea bags.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false">
+                            Battery Life?
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p>A single charge lasts up to 30 days of daily tea brewing sessions.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false">
+                            What is included?
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p>Each box contains the Kessel timer, a USB-C charging cable, and our Quick Start guide.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Kessel Brewing Systems. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        navToggle.addEventListener('click', () => {
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            navToggle.setAttribute('aria-expanded', !expanded);
+            navLinks.classList.toggle('is-open');
+        });
+
+        // Accordion Logic
+        const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+
+        accordionTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const item = trigger.parentElement;
+                const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+                
+                // Close others (optional, but cleaner)
+                document.querySelectorAll('.accordion-item').forEach(i => {
+                    if (i !== item) {
+                        i.classList.remove('active');
+                        i.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Toggle current
+                item.classList.toggle('active');
+                trigger.setAttribute('aria-expanded', !isExpanded);
+            });
+        });
+
+        // Close mobile menu when link clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('is-open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
+</body>
+</html>
