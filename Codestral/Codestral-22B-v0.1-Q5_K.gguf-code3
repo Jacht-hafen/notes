@@ -1,0 +1,28 @@
+def parse_csv_line(line: str) -> list[str]:
+    fields = []
+    field = ""
+    quoted = False
+    i = 0
+    while i < len(line):
+        if line[i] == '"':
+            if quoted and i + 1 < len(line) and line[i + 1] == '"':
+                field += '"'
+                i += 2
+            else:
+                quoted = not quoted
+                i += 1
+        elif line[i] == ',' and not quoted:
+            fields.append(field)
+            field = ""
+            i += 1
+        else:
+            field += line[i]
+            i += 1
+    fields.append(field)
+    return fields
+assert parse_csv_line('"John",Doe,30') == ['John', 'Doe', '30']
+assert parse_csv_line('"Jane","",40') == ['Jane', '', '40']
+assert parse_csv_line('"Foo,""Bar""",Baz') == ['Foo,"Bar"', 'Baz']
+assert parse_csv_line('"Quoted, comma",Text') == ['Quoted, comma', 'Text']
+assert parse_csv_line('First,"Second with ""quotes"" and , commas"') == ['First', 'Second with "quotes" and , commas']
+assert parse_csv_line(',,') == ['', '', '']
