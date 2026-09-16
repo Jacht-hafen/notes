@@ -1,1 +1,4 @@
 keine Volle Auslastung auf GPU möglich bei Kontextfenster > 24K
+8.44 tok/sec (Bei nicht voller Auslagerung)
+6404 Tokens total
+2.83 sec to first token
