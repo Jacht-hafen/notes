@@ -1,1 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Kessel — a pocket tea brewing timer with a brass dial, 32 built-in tea curves and a chime tuned to steam.">
+<meta name="theme-color" content="#0C1512">
+<title>Kessel — Tea Brewing Timer</title>
+<style>
+/* ============================================================
+   KESSEL · design tokens — every color & pixel length lives here
+   (media-query breakpoints must be literal per CSS spec)
+   ============================================================ */
+:root{
+  /* palette */
+  --bg-0:#0C1512;
+  --bg-1:#121F19;
+  --bg-2:#1A2E24;
+  --head-bg:#0D1813;
+  --foot-bg:#0A110D;
+  --text:#EDE6D6;
+  --mut:#A8BAA4;
+  --dim:#7E9584;
+  --accent:#E9B44C;
+  --accent-hi:#F3C96F;
+  --on-accent:#1D1406;
+  --ready:#8FD3A0;
+  --line:rgba(237,230,214,.15);
+  --line-2:rgba(237,230,214,.30);
+  --track:rgba(237,230,214,.13);
+  --focus:#FFD98A;
+  --shadow-card:0 18px 44px rgba(3,9,6,.50);
+  --shadow-btn:0 10px 26px rgba(233,180,76,.22);
+  --glow-f:drop-shadow(0 0 14px rgba(233,180,76,.55));
+  --glow-g:drop-shadow(0 0 14px rgba(143,211,160,.60));
 
+  /* ambient backgrounds (values held as full gradient strings) */
+  --amb-a:radial-gradient(680px 460px at 86% -12%, rgba(233,180,76,.08), transparent 70%);
+  --amb-b:radial-gradient(760px 540px at -14% 42%, rgba(143,211,160,.06), transparent 72%);
+  --dotgrid:radial-gradient(rgba(237,230,214,.05) 1px, transparent 1.5px);
+
+  /* type */
+  --font-d:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --font-b:"Avenir Next",Avenir,Seravek,"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --font-m:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,"Liberation Mono",monospace;
+  --fs-xs:12px;  --fs-sm:14px; --fs-md:16px; --fs-lg:19px;
+  --fs-xl:24px;  --fs-2xl:31px; --fs-hero:58px; --fs-digits:44px;
+  --lh-h:1.05;   --lh-b:1.62;  --lh-m:1.45;
+
+  /* spacing */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:24px; --sp-6:36px; --sp-7:56px; --sp-8:92px;
+
+  /* shape */
+  --r-s:7px; --r-m:13px; --r-l:20px;
+  --w-line:1px; --w-focus:3px; --foff:3px;
+
+  /* svg stroke weights & icon sizes */
+  --sw-ico:1.8px; --sw-ticks:6px; --sw-track:8px; --sw-fg:8px;
+  --sw-steam:4px; --dot:9px; --ico:18px; --ico-lg:26px; --ico-box:54px;
+
+  /* metrics */
+  --wrap-w:1120px; --pad-x:24px; --header-h:70px;
+  --dial-max:430px; --glow-max:520px;
+  --nav-t:42px; --bar-w:20px; --bar-h:2px;
+  --bar-y:6.5px; --bar-yn:-6.5px;
+  --fx-w:13px;
+
+  /* motion */
+  --t1:.22s; --t2:.45s;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-pop:cubic-bezier(.34,1.56,.64,1);
+  --rise:28px; --lift:-6px; --bob-y:-6px;
+  --steam-rise:-54px; --steam-drop:9px; --steam-drift:9px;
+  --breathe:7s; --steam-dur:4.8s; --sd-1:0s; --sd-2:1.5s; --sd-3:3s;
+}
+
+/* ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-b);
+  font-size:var(--fs-md);
+  line-height:var(--lh-b);
+  color:var(--text);
+  background:var(--amb-a),var(--amb-b) var(--bg-0);
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--accent);color:var(--on-accent)}
+
+:focus-visible{
+  outline:var(--w-focus) solid var(--focus);
+  outline-offset:var(--foff);
+  border-radius:var(--r-s);
+}
+.wrap{width:min(100%,var(--wrap-w));margin-inline:auto;padding-inline:var(--pad-x)}
+
+.skip{
+  position:fixed;top:var(--sp-2);left:var(--sp-2);z-index:99;
+  background:var(--accent);color:var(--on-accent);
+  font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;
+  padding-block:var(--sp-3);padding-inline:var(--sp-4);border-radius:var(--r-s);
+  opacity:0;pointer-events:none;transition:opacity var(--t1) linear;
+}
+.skip:focus{opacity:1;pointer-events:auto}
+
+.mono{font-family:var(--font-m)}
+.kicker{
+  display:inline-flex;align-items:center;gap:var(--sp-3);
+  font-family:var(--font-m);font-size:var(--fs-xs);
+  letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+}
+.kicker::before{content:"";width:28px;height:var(--w-line);background:var(--accent);opacity:.75;flex:none}
+
+/* ============ header ============ */
+.site-head{
+  position:sticky;top:0;z-index:50;
+  background:var(--head-bg);
+  border-bottom:var(--w-line) solid var(--line);
+}
+.head-in{display:flex;align-items:center;justify-content:space-between;height:var(--header-h);gap:var(--sp-4)}
+.brand{display:inline-flex;align-items:center;gap:var(--sp-3);font-family:var(--font-d);font-size:var(--fs-xl);letter-spacing:.01em}
+.brand svg{width:26px;height:26px;color:var(--accent);transition:transform var(--t2) var(--ease-pop)}
+.brand:hover svg{transform:rotate(-10deg)}
+.site-nav{display:flex;align-items:center;gap:var(--sp-6)}
+.site-nav a{
+  font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mut);position:relative;padding-block:var(--sp-2);transition:color var(--t1) linear;
+}
+.site-nav a::after{
+  content:"";position:absolute;left:0;right:0;bottom:var(--sp-1);height:var(--w-line);
+  background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform var(--t2) var(--ease-out);
+}
+.site-nav a:hover{color:var(--text)}
+.site-nav a:hover::after{transform:scaleX(1)}
+.nav-reserve{color:var(--accent)!important;border:var(--w-line) solid var(--line-2);border-radius:999px;padding-inline:var(--sp-4)!important}
+.nav-toggle{display:none;position:relative;width:var(--nav-t);height:var(--nav-t);flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:var(--r-s)}
+.nav-toggle span{width:var(--bar-w);height:var(--bar-h);background:var(--text);border-radius:999px;transition:transform var(--t2) var(--ease-out),opacity var(--t1) linear}
+
+/* ============ hero ============ */
+.hero{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:var(--sp-7);align-items:center;padding-top:calc(var(--header-h) + var(--sp-7));padding-bottom:var(--sp-8)}
+.hero::before{ /* faint dot field, masked away at the edges */
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:var(--dotgrid);background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(75% 85% at 30% 30%, #000 30%, transparent 90%);
+          mask-image:radial-gradient(75% 85% at 30% 30%, #000 30%, transparent 90%);
+}
+.hero-copy>*{animation:rise var(--t2) var(--ease-out) both;animation-duration:.7s}
+.hero-copy>*:nth-child(2){animation-delay:.08s}
+.hero-copy>*:nth-child(3){animation-delay:.16s}
+.hero-copy>*:nth-child(4){animation-delay:.24s}
+.hero-copy>*:nth-child(5){animation-delay:.32s}
+@keyframes rise{from{opacity:0;transform:translateY(var(--rise))}}
+
+h1{
+  font-family:var(--font-d);font-weight:600;font-size:var(--fs-hero);line-height:var(--lh-h);
+  letter-spacing:-.015em;margin-block:var(--sp-5) var(--sp-4);max-width:12ch;
+}
+h1 em{font-style:italic;color:var(--accent)}
+.sub{color:var(--mut);font-size:var(--fs-lg);line-height:var(--lh-b);max-width:46ch;margin-bottom:var(--sp-6)}
+
+.btn{
+  display:inline-flex;align-items:center;gap:var(--sp-3);
+  background:var(--accent);color:var(--on-accent);font-weight:700;font-size:var(--fs-md);letter-spacing:.01em;
+  padding-block:15px;padding-inline:26px;border-radius:999px;box-shadow:var(--shadow-btn);
+  transition:background var(--t1) linear,transform var(--t2) var(--ease-out),box-shadow var(--t2) linear;
+}
+.btn svg{width:var(--ico);height:var(--ico);transition:transform var(--t2) var(--ease-pop)}
+.btn:hover{background:var(--accent-hi);transform:translateY(-2px)}
+.btn:hover svg{transform:translateX(4px)}
+.btn:active{transform:none}
+
+.hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3) var(--sp-5);margin-top:var(--sp-6);color:var(--dim);font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.14em}
+.hero-meta li{display:inline-flex;align-items:center;gap:var(--sp-2)}
+.hero-meta svg{width:13px;height:13px;color:var(--ready)}
+
+/* --- the dial (live demo of the product) --- */
+.stage{position:relative;display:grid;place-items:center;padding-block:var(--sp-5);animation:rise .8s var(--ease-out) both}
+.glow{
+  position:absolute;top:36%;left:50%;transform:translateX(-50%);
+  width:min(96%,var(--glow-max));aspect-ratio:1;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle, var(--amb-glow), transparent 70%);
+  animation:breathe var(--breathe) ease-in-out infinite alternate;
+}
+@keyframes breathe{from{opacity:.85;transform:translateX(-50%) scale(1)}to{opacity:1;transform:translateX(-50%) scale(1.07)}}
+.dial-face{position:relative;width:min(100%,var(--dial-max));aspect-ratio:1}
+svg.dial{width:100%;height:auto}
+
+.ring-ticks{stroke:var(--text);opacity:.26;fill:none;stroke-width:var(--sw-ticks)}
+.ring-track{stroke:var(--track);fill:none;stroke-width:var(--sw-track)}
+.ring-fg{
+  stroke:var(--accent);fill:none;stroke-width:var(--sw-fg);stroke-linecap:round;
+  filter:var(--glow-f);transition:stroke .5s linear,filter .5s linear;
+}
+.ready .ring-fg{stroke:var(--ready);filter:var(--glow-g)}
+.ring-inner{stroke:var(--line);fill:none;stroke-width:var(--w-line)}
+
+.steam path{
+  stroke:var(--text);fill:none;stroke-width:var(--sw-steam);stroke-linecap:round;opacity:.28;
+  transform-box:fill-box;transform-origin:50% 100%;
+}
+.s1{animation:steam var(--steam-dur) linear infinite var(--sd-1)}
+.s2{animation:steam calc(var(--steam-dur) + .9s) linear infinite var(--sd-2)}
+.s3{animation:steam calc(var(--steam-dur) - .6s) linear infinite var(--sd-3)}
+@keyframes steam{
+  0%{opacity:0;transform:translateY(var(--steam-drop)) scale(.85)}
+  30%{opacity:.5}
+  75%{opacity:.22}
+  100%{opacity:0;transform:translate(var(--steam-drift),var(--steam-rise)) scale(1.3)}
+}
+
+.dial-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-2);pointer-events:none;text-align:center;padding-inline:var(--sp-6)}
+.state{display:inline-flex;align-items:center;gap:var(--sp-2);font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.24em;color:var(--accent);transition:color .5s linear}
+.ready .state{color:var(--ready)}
+.state i{width:var(--dot);height:var(--dot);border-radius:50%;background:currentColor;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.digits{font-family:var(--font-m);font-size:var(--fs-digits);line-height:1;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.tea-name{font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.2em;color:var(--mut)}
+.pop{animation:pop .5s var(--ease-pop)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(var(--bump))}100%{transform:scale(1)}}
+
+.chip{
+  position:absolute;z-index:2;background:var(--bg-1);border:var(--w-line) solid var(--line-2);
+  border-radius:999px;padding-block:var(--sp-2);padding-inline:var(--sp-3);
+  font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.16em;color:var(--mut);white-space:nowrap;
+}
+.chip-a{top:5%;left:-1%;animation:bobA 3.8s ease-in-out infinite alternate}
+.chip-b{bottom:9%;right:0%;animation:bobB 4.6s ease-in-out .7s infinite alternate}
+@keyframes bobA{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(-3deg) translateY(var(--bob-y))}}
+@keyframes bobB{from{transform:rotate(2deg) translateY(0)}to{transform:rotate(2deg) translateY(calc(var(--bob-y) * .7))}}
+
+/* ============ sections shared ============ */
+.section{padding-block:var(--sp-8);scroll-margin-top:calc(var(--header-h) + var(--sp-4))}
+.sec-head{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--sp-6);align-items:end;margin-bottom:var(--sp-7)}
+h2{font-family:var(--font-d);font-weight:600;font-size:var(--fs-2xl);line-height:var(--lh-h);letter-spacing:-.01em;margin-top:var(--sp-4);max-width:20ch}
+.sec-lede{color:var(--mut);font-size:var(--fs-lg);line-height:var(--lh-b);justify-self:end;align-self:end;max-width:38ch;padding-bottom:6px}
+
+/* ============ feature cards ============ */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-5)}
+.card{
+  display:flex;flex-direction:column;background:var(--bg-1);
+  border:var(--w-line) solid var(--line);border-radius:var(--r-m);
+  padding:var(--sp-6) var(--sp-5) var(--sp-5);min-width:0;
+  transition:transform var(--t2) var(--ease-out),border-color var(--t1) linear,box-shadow var(--t2) linear;
+}
+.card:hover{transform:translateY(var(--lift));border-color:var(--line-2);box-shadow:var(--shadow-card)}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-5)}
+.card-ico{
+  width:var(--ico-box);height:var(--ico-box);flex:none;border-radius:var(--r-m);
+  display:grid;place-items:center;background:var(--bg-2);border:var(--w-line) solid var(--line);
+  transition:transform var(--t2) var(--ease-pop);
+}
+.card:hover .card-ico{transform:rotate(-8deg)}
+.card-ico svg{width:var(--ico-lg);height:var(--ico-lg);stroke:currentColor;fill:none;stroke-width:var(--sw-ico);stroke-linecap:round;stroke-linejoin:round}
+.idx{font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.2em;color:var(--dim)}
+.card h3{font-family:var(--font-d);font-weight:600;font-size:var(--fs-xl);line-height:var(--lh-h);margin-bottom:var(--sp-3)}
+.card p{color:var(--mut);max-width:34ch}
+.card .spec{
+  margin-top:auto;padding-top:var(--sp-4);border-top:var(--w-line) solid var(--line);
+  font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.18em;color:var(--dim);
+}
+.cards .card:nth-child(1) .card-ico{color:var(--accent)}
+.cards .card:nth-child(2) .card-ico{color:var(--ready)}
+.cards .card:nth-child(3) .card-ico{color:var(--text)}
+
+/* ============ FAQ ============ */
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:var(--sp-7);align-items:start}
+.faq-side{position:sticky;top:calc(var(--header-h) + var(--sp-6))}
+.faq-note{color:var(--mut);margin-top:var(--sp-5);max-width:30ch;font-size:var(--fs-sm)}
+.faq-note a{color:var(--accent);border-bottom:var(--w-line) solid var(--line-2);transition:border-color var(--t1) linear}
+.faq-note a:hover{border-color:var(--accent)}
+
+.faq-item{border-bottom:var(--w-line) solid var(--line)}
+.faq-item:first-child{border-top:var(--w-line) solid var(--line)}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);
+  text-align:left;padding-block:var(--sp-5);font-weight:600;font-size:var(--fs-lg);line-height:var(--lh-m);
+  transition:color var(--t1) linear;
+}
+.faq-q:hover{color:var(--accent)}
+.open .faq-q{color:var(--accent)}
+.fx{position:relative;width:var(--fx-w);height:var(--bar-h);flex:none}
+.fx i{position:absolute;left:0;top:0;width:100%;height:var(--bar-h);border-radius:999px;background:currentColor;transition:transform var(--t2) var(--ease-pop)}
+.fx i:last-child{transform:rotate(90deg)}
+.open .fx{transform:rotate(180deg);transition:transform var(--t2) var(--ease-pop)}
+.open .fx i:last-child{transform:rotate(0deg)}
+
+.faq-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--t2) var(--ease-out)}
+.open .faq-panel{grid-template-rows:1fr}
+.faq-inner{overflow:hidden;min-height:0}
+.faq-body{padding-bottom:var(--sp-5);color:var(--mut);max-width:60ch;font-size:var(--fs-md)}
+
+/* ============ footer ============ */
+.site-foot{background:var(--foot-bg);border-top:var(--w-line) solid var(--line);scroll-margin-top:var(--header-h)}
+.foot-main{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-6);padding-block:var(--sp-7)}
+.foot-brand .tag{font-family:var(--font-d);font-style:italic;font-size:var(--fs-lg);color:var(--mut);margin-top:var(--sp-3)}
+.foot-info{text-align:right;display:grid;gap:var(--sp-2);font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.16em;color:var(--dim)}
+.foot-info a{color:var(--accent)}
+.foot-info a:hover{color:var(--accent-hi)}
+.foot-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-3) var(--sp-5);padding-block:var(--sp-5);border-top:var(--w-line) solid var(--line);font-family:var(--font-m);font-size:var(--fs-xs);letter-spacing:.12em;color:var(--dim)}
+.foot-bar svg{width:34px;height:20px;stroke:var(--dim);fill:none;stroke-width:2px;stroke-linecap:round}
+
+/* ============ reveal on scroll ============ */
+[data-reveal]{opacity:0;transform:translateY(var(--rise));transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);transition-delay:var(--rvd,0s)}
+[data-reveal].in{opacity:1;transform:none}
+.cards .card:nth-child(2){--rvd:.12s}
+.cards .card:nth-child(3){--rvd:.24s}
+
+/* ============ breakpoints (literals required by CSS spec) ============ */
+@media (max-width:880px){
+  .hero{grid-template-columns:1fr;gap:var(--sp-6);padding-top:calc(var(--header-h) + var(--sp-6))}
+  .stage{order:2;padding-bottom:var(--sp-3)}
+  h1{max-width:none}
+  .sec-head{grid-template-columns:1fr;align-items:start}
+  .sec-lede{justify-self:start;align-self:start;padding-bottom:0}
+}
+@media (max-width:700px){
+  :root{--fs-hero:42px;--fs-2xl:28px;--sp-8:64px;--sp-7:44px;--header-h:60px;--dial-max:350px;--glow-max:330px;--pad-x:16px}
+  .nav-toggle{display:flex}
+  .site-nav{
+    display:none;position:absolute;top:var(--header-h);left:0;right:0;
+    flex-direction:column;align-items:stretch;gap:var(--sp-2);
+    background:var(--head-bg);border-bottom:var(--w-line) solid var(--line);
+    padding-block:var(--sp-4);padding-inline:var(--pad-x) calc(var(--pad-x) + var(--nav-t));
+  }
+  .site-nav a{padding-block:var(--sp-3)}
+  .nav-reserve{border:0;text-align:center;margin-top:var(--sp-2)}
+  .nav-open .site-nav{display:flex;animation:rise .3s var(--ease-out) both}
+  .nav-open .nav-toggle span:nth-child(1){transform:translateY(var(--bar-y)) rotate(45deg)}
+  .nav-open .nav-toggle span:nth-child(2){opacity:0}
+  .nav-open .nav-toggle span:nth-child(3){transform:translateY(var(--bar-yn)) rotate(-45deg)}
+  .cards{grid-template-columns:1fr}
+  .faq-grid{grid-template-columns:1fr;gap:var(--sp-6)}
+  .faq-side{position:static}
+  .foot-info{text-align:left}
+  .dial-center{padding-inline:0}
+}
+
+/* ============ reduced motion ============ */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  [data-reveal]{opacity:1;transform:none}
+  .steam path{opacity:.25}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ================= HEADER / NAV ================= -->
+<header class="site-head" id="siteHead">
+  <div class="wrap head-in">
+    <a class="brand" href="#top" aria-label="Kessel — home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6.5 9.5h10a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-6a4 4 0 0 1-4-4v-3a2 2 0 0 1 2-2Z"/>
+        <path d="M9.5 9.5V8.2A2.6 2.6 0 0 1 14.7 8v1.5"/>
+        <path d="M18.5 11l3-1.5v4.2l-3-1.6"/>
+        <circle cx="12" cy="4.8" r=".9"/>
+      </svg>
+      Kessel
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="site-nav" id="siteNav" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-reserve" href="#reserve">Reserve</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<!-- ================= HERO ================= -->
+<section class="hero wrap" id="top" aria-labelledby="heroH">
+  <div class="hero-copy">
+    <p class="kicker">Kessel · Tea brewing timer — Nº 01</p>
+    <h1 id="heroH">Every leaf keeps <em>its own time.</em></h1>
+    <p class="sub">Kessel is a pocket-sized brewing timer with a machined brass dial, thirty-two built-in tea curves and a chime tuned to steam. Set the minute once — taste the difference for years.</p>
+    <a class="btn" href="#reserve">Reserve yours · $79
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg>
+    </a>
+    <ul class="hero-meta">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5L20 6.5"/></svg>Ships spring 2026</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5L20 6.5"/></svg>IPX7 shell</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5L20 6.5"/></svg>USB-C</li>
+    </ul>
+  </div>
+
+  <div class="stage">
+    <div class="glow" aria-hidden="true"></div>
+    <span class="chip chip-a mono" aria-hidden="true">IPX7 · RINSES CLEAN</span>
+    <span class="chip chip-b mono" aria-hidden="true">42-DAY CELL</span>
+
+    <div class="dial-face ready-fx" id="dialWrap">
+      <svg class="dial" viewBox="0 0 400 430" role="img" aria-label="Live demo of the Kessel brewing dial">
+        <!-- steam wisps -->
+        <g class="steam" aria-hidden="true">
+          <g transform="translate(172,96)"><path class="s1" d="M0 34 c-8 -7 -5 -15 1 -20 c6 -5 5 -12 -1 -16"/></g>
+          <g transform="translate(200,84)"><path class="s2" d="M0 40 c-9 -8 -6 -17 1 -23 c7 -6 6 -14 -1 -19"/></g>
+          <g transform="translate(228,96)"><path class="s3" d="M0 34 c-8 -7 -5 -15 1 -20 c6 -5 5 -12 -1 -16"/></g>
+        </g>
+        <!-- tick ring -->
+        <circle class="ring-ticks" cx="200" cy="245" r="186" pathLength="96" stroke-dasharray=".5 3.5"/>
+        <!-- capacity track -->
+        <circle class="ring-track" cx="200" cy="245" r="152"/>
+        <!-- inner hairline for depth -->
+        <circle class="ring-inner" cx="200" cy="245" r="120"/>
+        <!-- depleting brew arc (driven by JS) -->
+        <circle class="ring-fg" id="ringFg" cx="200" cy="245" r="152" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0" transform="rotate(-90 200 245)"/>
+      </svg>
+
+      <div class="dial-center">
+        <span class="state"><i aria-hidden="true"></i><span id="stateLabel">BREWING</span></span>
+        <div class="digits" id="digits">04:00</div>
+        <div class="tea-name" id="teaname">OOLONG · 90°C</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="wrap section" id="features" aria-labelledby="featH">
+  <div class="sec-head" data-reveal>
+    <div>
+      <p class="kicker">Features</p>
+      <h2 id="featH">Built like a kettle. Runs like a clock.</h2>
+    </div>
+    <p class="sec-lede">No apps, no menus, no fumbling over the lid — just an instrument that behaves like one and chimes at exactly the right minute.</p>
+  </div>
+
+  <ul class="cards">
+    <li class="card" data-reveal>
+      <div class="card-top">
+        <span class="card-ico" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="18.5" r="9"/><path d="M16 18.5 21 13.5"/><circle cx="16" cy="18.5" r="1.4" fill="currentColor" stroke="none"/><path d="M16 5.5v3M27.5 18.5h-3M6.5 18.5h3M24 10.5l-2.1 2.1M8 10.5l2.1 2.1"/></svg>
+        </span>
+        <span class="idx">01</span>
+      </div>
+      <h3>A dial, not a menu</h3>
+      <p>A machined brass crown dials in steep time click by click — one turn per minute, the ring lighting as you go. Your hands already know how to use it.</p>
+      <span class="spec">SET RANGE · 30 SEC – 20 MIN</span>
+    </li>
+
+    <li class="card" data-reveal>
+      <div class="card-top">
+        <span class="card-ico" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M7.5 24.5C7.5 13.5 14.5 7.5 24.5 7.5c0 10-6 17-17 17Z"/><path d="M7.5 24.5c4.5-6.5 9.5-11.5 14.5-14.5"/></svg>
+        </span>
+        <span class="idx">02</span>
+      </div>
+      <h3>Knows your leaf</h3>
+      <p>Thirty-two curves for time and water temperature live in the shell — sencha at two minutes, pu-erh at six. Pick a leaf once; Kessel remembers it to the degree.</p>
+      <span class="spec">BUILT-IN CURVES · 32</span>
+    </li>
+
+    <li class="card" data-reveal>
+      <div class="card-top">
+        <span class="card-ico" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><rect x="4.5" y="10.5" width="18" height="11" rx="2.5"/><path d="M26.5 13.5v5h-2.5"/><rect x="8" y="13.7" width="3.4" height="4.6" fill="currentColor" stroke="none"/><path d="M19.3 13.4c1.8 2.2 2.7 3.7 2.7 5a2.7 2.7 0 1 1-5.4 0c0-1.3.9-2.8 2.7-5Z"/></svg>
+        </span>
+        <span class="idx">03</span>
+      </div>
+      <h3>Rinses clean, lasts weeks</h3>
+      <p>An anodized steel shell shrugs off counter-top spills (IPX7), and a single USB-C charge runs four-plus weeks of daily cups. It lives on the shelf, not in your pocket.</p>
+      <span class="spec">BATTERY · 42 DAYS</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="wrap section" id="faq" aria-labelledby="faqH">
+  <div class="faq-grid">
+    <aside class="faq-side" data-reveal>
+      <p class="kicker">Questions</p>
+      <h2 id="faqH">Steeping questions.</h2>
+      <p class="faq-note">Short answers, no jargon. If yours isn't here, write to <a href="mailto:hello@kessel.tea">hello@kessel.tea</a>.</p>
+    </aside>
+
+    <div class="faq-list" data-reveal>
+      <div class="faq-item">
+        <h3><button class="faq-q" id="q1" aria-expanded="false" aria-controls="a1">
+          How is this different from a timer on my phone?
+          <span class="fx" aria-hidden="true"><i></i><i></i></span>
+        </button></h3>
+        <div class="faq-panel" id="a1" role="region" aria-labelledby="q1">
+          <div class="faq-inner"><p class="faq-body">Your phone buries timers under notifications and dies by noon. Kessel does one thing: it dials time, holds the temperature guidance for your leaf, and chimes at exactly the right minute — no app, no screen glare, and a sound you can actually hear over a kettle from across the room.</p></div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <h3><button class="faq-q" id="q2" aria-expanded="false" aria-controls="a2">
+          Do I need an account or Wi-Fi?
+          <span class="fx" aria-hidden="true"><i></i><i></i></span>
+        </button></h3>
+        <div class="faq-panel" id="a2" role="region" aria-labelledby="q2">
+          <div class="faq-inner"><p class="faq-body">No. Kessel is offline-first by design — every curve ships in the shell and works forever without a connection. An optional companion arrives later this year for custom leaves and brew logs, but the timer never requires it.</p></div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <h3><button class="faq-q" id="q3" aria-expanded="false" aria-controls="a3">
+          What if I'm not at the cup when it's ready?
+          <span class="fx" aria-hidden="true"><i></i><i></i></span>
+        </button></h3>
+        <div class="faq-panel" id="a3" role="region" aria-labelledby="q3">
+          <div class="faq-inner"><p class="faq-body">The ring holds a slow amber pulse for ten minutes while a soft chime repeats three times, then rests. Lift Kessel at any point and the display tells you whether you're still in the sweet window — or already tipping toward bitter.</p></div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <h3><button class="faq-q" id="q4" aria-expanded="false" aria-controls="a4">
+          What is it made of, and what does it weigh?
+          <span class="fx" aria-hidden="true"><i></i><i></i></span>
+        </button></h3>
+        <div class="faq-panel" id="a4" role="region" aria-labelledby="q4">
+          <div class="faq-inner"><p class="faq-body">Anodized 316L steel over a brass dial core, 92 grams, splash-proof to IPX7 so it rinses right under the tap. The battery isn't user-serviceable; the shell is fully recyclable, and we stand behind every unit for two years.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER / RESERVE ================= -->
+<footer class="site-foot" id="reserve">
+  <div class="wrap foot-main">
+    <div class="foot-brand">
+      <a class="brand" href="#top" aria-label="Kessel — back to top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6.5 9.5h10a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-6a4 4 0 0 1-4-4v-3a2 2 0 0 1 2-2Z"/>
+          <path d="M9.5 9.5V8.2A2.6 2.6 0 0 1 14.7 8v1.5"/>
+          <path d="M18.5 11l3-1.5v4.2l-3-1.6"/><circle cx="12" cy="4.8" r=".9"/>
+        </svg>
+        Kessel
+      </a>
+      <p class="tag">Slow tea, sharp timing.</p>
+    </div>
+    <div class="foot-info">
+      <span>RESERVATIONS OPEN SPRING 2026 · FIRST RUN OF 500 UNITS</span>
+      <a href="mailto:hello@kessel.tea">HELLO@KESSL.TEA</a>
+    </div>
+  </div>
+  <div class="wrap foot-bar">
+    <span>© <span id="yr">2025</span> KESSEL TEA INSTRUMENTS</span>
+    <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M10 22c-3-3-2.4-6 .8-8s2-5-.8-7"/><path d="M20 22c-3.4-3.4-2.7-6.8 .9-9s2.3-5.7-.9-8"/><path d="M30 22c-3-3-2.4-6 .8-8s2-5-.8-7"/></svg>
+    <span>A FICTIONAL PRODUCT · NO REAL TEA WAS RUSHED</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- mobile navigation ---------- */
+  var head = document.getElementById("siteHead"),
+      navToggle = document.getElementById("navToggle");
+  function setNav(open){
+    head.classList.toggle("nav-open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+    navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  }
+  navToggle.addEventListener("click", function(){ setNav(!head.classList.contains("nav-open")); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") setNav(false); });
+  head.querySelectorAll(".site-nav a").forEach(function(a){ a.addEventListener("click", function(){ setNav(false); }); });
+  window.addEventListener("resize", function(){ if (window.innerWidth > 700) setNav(false); });
+
+  /* ---------- FAQ accordion (native buttons: Enter/Space work out of the box) ---------- */
+  var qs = Array.prototype.slice.call(document.querySelectorAll(".faq-q"));
+  qs.forEach(function(btn, i){
+    btn.addEventListener("click", function(){
+      var open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      btn.closest(".faq-item").classList.toggle("open", !open);
+    });
+    btn.addEventListener("keydown", function(e){ /* bonus: arrow-key traversal */
+      var j = null;
+      if (e.key === "ArrowDown") j = (i + 1) % qs.length;
+      else if (e.key === "ArrowUp") j = (i - 1 + qs.length) % qs.length;
+      else if (e.key === "Home") j = 0;
+      else if (e.key === "End") j = qs.length - 1;
+      if (j !== null){ e.preventDefault(); qs[j].focus(); }
+    });
+  });
+
+  /* ---------- scroll reveals ---------- */
+  var revs = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
+  if (reduceMotion || !("IntersectionObserver" in window)){
+    revs.forEach(function(el){ el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { threshold: .16, rootMargin: "0px 0px -8% 0px" });
+    revs.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---------- the live brew dial (auto-cycling demo) ---------- */
+  var TEAS = [["SENCHA",75,120],["OOLONG",90,240],["EARL GREY",100,300],["PU-ERH",98,360]],
+      SPEED = 11,          // real seconds per brew-second (accelerated demo)
+      READY_MS = 2800,
+      wrap = document.getElementById("dialWrap"),
+      ringFg = document.getElementById("ringFg"),
+      digits = document.getElementById("digits"),
+      teaname = document.getElementById("teaname"),
+      stateLabel = document.getElementById("stateLabel"),
+      idx = 1;
+
+  function fmt(s){ var m = Math.floor(s/60); return (m<10?"0":"")+m+":"+(s%60<10?"0":"")+(s%60); }
+  function pop(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+
+  if (reduceMotion){ /* static, legible state */
+    ringFg.style.strokeDashoffset = "32";
+    digits.textContent = fmt(Math.round(TEAS[idx][2] * .68));
+  } else {
+    function brew(){
+      wrap.classList.remove("ready");
+      stateLabel.textContent = "BREWING";
+      var tea = TEAS[idx];
+      teaname.textContent = tea[0] + " · " + tea[1] + "\u00B0C";
+      pop(teaname);
+      var total = tea[2], dur = total * 1000 / SPEED, t0 = performance.now(), last = "";
+      ringFg.style.strokeDashoffset = "0";
+      (function frame(now){
+        var p = Math.min(1, (now - t0) / dur);
+        var d = fmt(Math.max(0, Math.ceil(total * (1 - p))));
+        if (d !== last){ digits.textContent = d; last = d; }
+        ringFg.style.strokeDashoffset = (p * 100).toFixed(2);
+        if (p < 1){ requestAnimationFrame(frame); }
+        else {
+          wrap.classList.add("ready");
+          stateLabel.textContent = "READY";
+          digits.textContent = "00:00";
+          setTimeout(function(){ idx = (idx + 1) % TEAS.length; brew(); }, READY_MS);
+        }
+      })(t0);
+    }
+    brew();
+  }
+
+  document.getElementById("yr").textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
