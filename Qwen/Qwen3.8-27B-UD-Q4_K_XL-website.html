@@ -270,4 +270,264 @@ h2{font-family:var(--font-display);font-size:var(--t-h2);line-height:var(--lh-ti
 .faq-item.is-open{border-color:var(--c-accent-deep);box-shadow:var(--sh-sm)}
 .faq-q{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);
-  text-align:left;padding:var(--s-3) var(--s-4);font-weight:
+  text-align:left;padding:var(--s-3) var(--s-4);font-weight:700;color:var(--c-ink);font-size:var(--t-base);line-height:var(--lh-snug);cursor:pointer;transition:color var(--e-1) ease}
+.faq-q:hover{color:var(--c-accent-deep)}
+.plus{flex:none;width:1.4rem;height:1.4rem;color:var(--c-accent-deep);transition:transform var(--e-2) ease}
+.faq-q[aria-expanded="true"] .plus{transform:rotate(45deg)}
+.faq-a{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows var(--e-2) ease, visibility 0s linear var(--e-2)}
+.faq-item.is-open .faq-a{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows var(--e-2) ease}
+.faq-a-in{overflow:hidden;min-height:0}
+.faq-a-in p{padding:var(--px-3) var(--s-4) var(--s-3);color:var(--c-ink-soft);font-size:var(--t-sm)}
+
+/* dial part colors */
+.face{fill:var(--c-pine)}
+.ticks{fill:none;stroke:var(--c-tick);stroke-width:var(--sw-icon)}
+.nav-toggle line{stroke:currentColor;stroke-width:var(--sw-icon);stroke-linecap:round}
+
+/* ============ FOOTER ============ */
+.site-footer{background-color:var(--c-pine-deep);color:var(--c-inv)}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:var(--s-5);padding-block:var(--s-7) var(--s-6)}
+.f-brand .brand{color:var(--c-inv)}
+.f-brand svg{color:var(--c-pine-deep)}
+.f-tag{margin-top:var(--s-3);max-width:24ch;color:var(--c-inv-soft);font-size:var(--t-sm)}
+.f-h{font-size:var(--t-label);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--c-amber);margin-bottom:var(--s-3);font-weight:700}
+.f-col li{margin-top:var(--s-2);font-size:var(--t-sm)}
+.f-col a{color:var(--c-inv-soft);transition:color var(--e-1) ease}
+.f-col a:hover{color:var(--c-inv);text-decoration:underline;text-underline-offset:var(--ul-off)}
+.f-bottom{border-top:var(--w-1) solid var(--c-line-dark);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-4);padding-block:var(--s-3);color:var(--c-inv-soft);font-size:var(--t-sm)}
+.f-bottom svg{width:1.5rem;height:1.5rem;color:var(--c-copper);flex:none}
+
+/* ============ REVEALS ============ */
+.js [data-reveal]{opacity:0;transform:translateY(var(--s-3));transition:opacity var(--e-2) ease, transform var(--e-2) cubic-bezier(.2,.7,.25,1)}
+.js [data-reveal].in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:60em){
+.features-grid{grid-template-columns:1fr 1fr}
+.features-grid .card:first-child{grid-column:1/-1}
+.footer-grid{grid-template-columns:1fr 1fr}
+.f-brand{grid-column:1/-1}
+}
+@media (max-width:43.75em){
+.hero-grid{grid-template-columns:1fr;gap:var(--s-5);padding-block:var(--s-6)}
+.device-stage{width:min(100%,20rem)}
+.features-grid{grid-template-columns:1fr}
+.footer-grid{grid-template-columns:1fr}
+
+/* nav collapse */
+.head-in{position:relative}
+.nav-toggle{display:inline-grid;place-items:center;margin-left:auto}
+.menu{
+position:absolute;top:100%;left:calc(-1 * var(--gutter));right:calc(-1 * var(--gutter));z-index:5;
+background-color:var(--c-paper);border-bottom:var(--w-2) solid var(--c-copper);box-shadow:var(--sh-md);
+display:grid;grid-template-rows:0fr;visibility:hidden;
+transition:grid-template-rows var(--e-2) ease, visibility 0s linear var(--e-2);
+}
+.menu > *{overflow:hidden;min-height:0}
+.site-head.is-open .menu{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows var(--e-2) ease}
+.nav-list{flex-direction:column;align-items:flex-start;gap:var(--s-3);padding:var(--s-4)}
+.btn-nav{display:block;width:100%;text-align:center;padding-block:var(--s-1)}
+}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+.steam path,.ticker-track,.device-stage.is-done .dial-time{animation:none}
+.ring-progress,.js [data-reveal]{transition:none}
+.js [data-reveal]{opacity:1;transform:none}
+.btn-brew:hover,.card:hover,.chip:hover,.card:hover .card-icon{transform:none}
+}
+</style>
+
+</head> <body id="top"> <a class="skip-link" href="#main">Skip to content</a> <!-- ============ HEADER ============ --> <header class="site-head"> <div class="wrap head-in"> <a class="brand" href="#top" aria-label="Kessel home"> <svg viewBox="0 0 32 32" aria-hidden="true"> <circle cx="16" cy="16" r="15" fill="currentColor"/> <path d="M8.2 19.5 A8.5 8.5 0 1 1 23.8 19.5" fill="none" stroke="#E8A34C" stroke-width="3" stroke-linecap="round"/> <circle cx="16" cy="16" r="2.2" fill="#E8A34C"/> </svg> Kessel </a>
+<button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <line class="ln ln-a" x1="10" y1="15" x2="38" y2="15"/>
+    <line class="ln ln-b" x1="10" y1="24" x2="38" y2="24"/>
+    <line class="ln ln-c" x1="10" y1="33" x2="38" y2="33"/>
+  </svg>
+</button>
+
+<div class="menu" id="menu">
+  <nav aria-label="Main">
+    <ul class="nav-list">
+      <li><a class="u-link" href="#features">Features</a></li>
+      <li><a class="u-link" href="#faq">FAQ</a></li>
+      <li><a class="btn-nav" href="#brew">Pre-order</a></li>
+    </ul>
+  </nav>
+</div>
+</div> </header> <main id="main"> <!-- ============ HERO ============ --> <section class="hero" aria-labelledby="hero-title"> <div class="wrap hero-grid"> <div data-reveal> <p class="eyebrow">Precision tea timer · no app required</p> <h1 id="hero-title">Perfectly steeped, <em>to the second.</em></h1> <p class="hero-sub">Kessel holds the ideal time and water temperature for twelve teas. Set it on the counter, press once, and trust the ring — your phone can stay in its pocket.</p> <div class="cta-row"> <button type="button" class="btn-brew" id="brewBtn">Brew a sample cup</button> <span class="cta-hint">Runs right here — try it.</span> </div> </div>
+<figure class="device-stage is-idle" data-tea="sencha" data-reveal>
+  <svg class="stage-ring" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="48"/>
+    <circle cx="50" cy="50" r="38" opacity=".6"/>
+  </svg>
+
+  <svg class="dial-art" viewBox="0 0 360 400" role="img" aria-label="Kessel timer dial showing the countdown">
+    <!-- steam -->
+    <g class="steam" transform="translate(180 104)" aria-hidden="true">
+      <path d="M-24 8 C-36 -12 -12 -20 -24 -42"/>
+      <path d="M0 12 C-14 -10 12 -20 -2 -46"/>
+      <path d="M24 8 C36 -12 12 -20 24 -42"/>
+    </g>
+
+    <!-- face -->
+    <circle class="face" cx="180" cy="238" r="126"/>
+    <circle class="ticks" cx="180" cy="238" r="118" stroke-dasharray="2 13.4"/>
+
+    <!-- brew ring -->
+    <circle class="ring-track" cx="180" cy="238" r="98"/>
+    <circle class="ring-progress" id="ringProgress" cx="180" cy="238" r="98"
+            pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"
+            transform="rotate(-90 180 238)"/>
+
+    <!-- readout -->
+    <text class="dial-word" x="183" y="182" text-anchor="middle" font-size="15">KESSEL</text>
+    <text class="dial-time" id="dialTime" x="180" y="264" text-anchor="middle" font-size="58">02:00</text>
+    <text class="dial-note" id="dialTea" x="183" y="306" text-anchor="middle">SENCHA</text>
+
+    <!-- leaf -->
+    <g transform="translate(180 338)" aria-hidden="true">
+      <path class="leaf-body" d="M0 -12 C10 -6 10 8 0 15 C-10 8 -10 -6 0 -12 Z"/>
+      <path class="leaf-vein" d="M0 -7 L0 11"/>
+    </g>
+  </svg>
+
+  <div class="chips">
+    <button type="button" class="chip" data-tea="sencha" data-sec="120" aria-pressed="true">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5"/></svg>Sencha · 2:00
+    </button>
+    <button type="button" class="chip" data-tea="oolong" data-sec="300" aria-pressed="false">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5"/></svg>Rock Oolong · 5:00
+    </button>
+    <button type="button" class="chip" data-tea="chamomile" data-sec="180" aria-pressed="false">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5"/></svg>Chamomile · 3:00
+    </button>
+  </div>
+
+  <figcaption class="device-cap">Live demo — the countdown runs at ×8 speed.</figcaption>
+  <span class="sr-only" role="status" aria-live="polite" id="brewStatus"></span>
+</figure>
+</div> </section> <!-- ============ TICKER ============ --> <div class="ticker" aria-hidden="true"> <div class="ticker-track"> <ul class="tick-list"> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Sencha — 2:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Lapsang Souchong — 5:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Earl Grey — 4:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Gyokuro — 1:30</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Pu-erh — 6:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Darjeeling First Flush — 3:30</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Jasmine Pearl — 4:30</li> </ul> <ul class="tick-list"> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Sencha — 2:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Lapsang Souchong — 5:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Earl Grey — 4:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Gyokuro — 1:30</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Pu-erh — 6:00</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Darjeeling First Flush — 3:30</li> <li class="tick-item"><svg viewBox="0 0 12 12"><path d="M6 1 L10 6 L6 11 L2 6 Z" fill="currentColor"/></svg>Jasmine Pearl — 4:30</li> </ul> </div> </div> <!-- ============ FEATURES ============ --> <section id="features" aria-labelledby="feat-title"> <div class="wrap"> <header class="sec-head" data-reveal> <p class="eyebrow">What it does</p> <h2 id="feat-title">A dial that thinks like a tea master.</h2> <p>No screens in your pocket, no subscription, nothing to charge every night. Just a ring, a leaf, and the right moment.</p> </header>
+<div class="features-grid">
+  <article class="card" data-reveal>
+    <div class="card-top">
+      <span class="card-num">01</span>
+      <svg class="card-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="14" cy="14" r="10"/>
+        <path d="M14 9v5l3.5 2.6"/>
+      </svg>
+    </div>
+    <h3>The Glance Ring</h3>
+    <p>A slow-turning amber ring shows exactly how much steep time is left, readable from across the kitchen — no tapping a phone to check on your pot.</p>
+  </article>
+
+  <article class="card card--green" data-reveal>
+    <div class="card-top">
+      <span class="card-num">02</span>
+      <svg class="card-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M14 3 C22 7.5 22 19 14 25 C6 19 6 7.5 14 3 Z"/>
+        <path d="M14 8v13"/>
+      </svg>
+    </div>
+    <h3>Twelve Leaf Presets</h3>
+    <p>From sencha to lapsang, Kessel remembers each leaf's ideal steep and water temperature. Turn the dial; it handles the math.</p>
+  </article>
+
+  <article class="card card--pine" data-reveal>
+    <div class="card-top">
+      <span class="card-num">03</span>
+      <svg class="card-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 13h3.5"/>
+        <path d="M10 9v9"/>
+        <path d="M14.5 5v17"/>
+        <path d="M19 8.5v11"/>
+        <path d="M23.5 12h.5"/>
+      </svg>
+    </div>
+    <h3>A Chime, Not an Alarm</h3>
+    <p>When time is up you get two soft notes instead of a shriek — about the volume of a kettle sighing. Long-press to mute for late-night pots.</p>
+  </article>
+</div>
+</div> </section> <!-- ============ FAQ ============ --> <section id="faq" class="faq-band" aria-labelledby="faq-title"> <div class="wrap"> <header class="sec-head" data-reveal> <p class="eyebrow">Questions</p> <h2 id="faq-title">Before you pour.</h2> </header>
+<div class="faq-list">
+  <div class="faq-item" data-reveal>
+    <h3><button type="button" class="faq-q" id="fq1" aria-expanded="false" aria-controls="fa1">
+      <span>How does Kessel know when my tea is done?</span>
+      <svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button></h3>
+    <div class="faq-a" id="fa1" role="region" aria-labelledby="fq1">
+      <div class="faq-a-in"><p>Good question — it doesn't guess. Brewing is just time and temperature, so Kessel counts down the exact steep for your selected leaf against a preset table (or your own). When the ring closes, the leaves are done.</p></div>
+    </div>
+  </div>
+
+  <div class="faq-item" data-reveal>
+    <h3><button type="button" class="faq-q" id="fq2" aria-expanded="false" aria-controls="fa2">
+      <span>Can I save my own teas?</span>
+      <svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button></h3>
+    <div class="faq-a" id="fa2" role="region" aria-labelledby="fq2">
+      <div class="faq-a-in"><p>Yes. Press and hold the dial to add a custom leaf — name, steep time, and target temperature — up to forty of them. Your grandmother's "just over two minutes" can finally be exact.</p></div>
+    </div>
+  </div>
+
+  <div class="faq-item" data-reveal>
+    <h3><button type="button" class="faq-q" id="fq3" aria-expanded="false" aria-controls="fa3">
+      <span>Does it need batteries or Wi-Fi?</span>
+      <svg class="plus" viewBox="0 0 12 12" style="display:none" aria-hidden="true"></svg>
+    </button></h3>
+    <div class="faq-a" id="fa3" role="region" aria-labelledby="fq3">
+      <div class="faq-a-in"><p>Kessel runs on a single CR2450 coin cell for roughly eighteen months, with an optional USB-C cradle. There is no Wi-Fi, Bluetooth, or account — that's deliberate. A tea timer should never ask you to update its firmware.</p></div>
+    </div>
+  </div>
+
+  <div class="faq-item" data-reveal>
+    <h3><button type="button" class="faq-q" id="fq4" aria-expanded="false" aria-controls="fa4">
+      <span>Will the chime wake the whole house?</span>
+      <svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button></h3>
+    <div class="faq-a" id="fa4" role="region" aria-labelledby="fq4">
+      <div class="faq-a-in"><p>No. The end-of-steep sound is a two-note chime at roughly 65&nbsp;dB — quieter than most doorbells and softer than your kettle's whistle. In silent mode the ring simply turns pale instead, so you still get the signal without a single note.</p></div>
+    </div>
+  </div>
+</div>
+</div> </section> </main> <!-- ============ FOOTER ============ --> <footer class="site-footer"> <div class="wrap"> <div class="footer-grid"> <div class="f-brand"> <a class="brand" href="#top" aria-label="Kessel home"> <svg viewBox="0 0 32 32" aria-hidden="true"> <circle cx="16" cy="16" r="15" fill="currentColor"/> <path d="M8.2 19.5 A8.5 8.5 0 1 1 23.8 19.5" fill="none" stroke="#E8A34C" stroke-width="3" stroke-linecap="round"/> <circle cx="16" cy="16" r="2.2" fill="#E8A34C"/> </svg> Kessel </a> <p class="f-tag">Brewing instruments for people who take two minutes seriously.</p> </div>
+  <nav aria-label="Product">
+    <h2 class="f-h">Product</h2>
+    <ul class="f-col">
+      <li><a href="#brew">Kessel One</a></li>
+      <li><a href="#features">How it brews</a></li>
+      <li><a href="#top">Accessories</a></li>
+    </ul>
+  </nav>
+
+  <nav aria-label="Company">
+    <h2 class="f-h">Company</h2>
+    <ul class="f-col">
+      <li><a href="#top">About</a></li>
+      <li><a href="#top">Brew Journal</a></li>
+      <li><a href="#top">Stockists</a></li>
+    </ul>
+  </nav>
+
+  <nav aria-label="Help">
+    <h2 class="f-h">Help</h2>
+    <ul class="f-col">
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#top">Care guide</a></li>
+      <li><a href="mailto:hello@kessel.tea">hello@kessel.tea</a></li>
+    </ul>
+  </nav>
+</div>
+
+<div class="f-bottom">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <path d="M7 19 C5.5 15 8.5 13 7 9"/>
+    <path d="M12 20 C10.5 16 13.5 14 12 10"/>
+    <path d="M17 19 C15.5 15 18.5 13 17 9"/>
+  </svg>
+  <span>© 2025 Kessel Brewing Instruments GmbH · Cologne</span>
+  <span>Steep responsibly.</span>
+</div>
+</div> </footer> <script> (function(){ 'use strict'; function $(s){return document.querySelector(s)} function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))} /* ---- header shadow on scroll ---- */ var head=$('.site-head'); window.addEventListener('scroll',function(){ head.classList.toggle('is-scrolled',window.scrollY>8); },{passive:true}); /* ---- collapsible nav (≤700px) ---- */ var toggle=$('#navToggle'),menuOpen=false; function setMenu(v){ menuOpen=v; head.classList.toggle('is-open',v); toggle.setAttribute('aria-expanded',String(v)); } toggle.addEventListener('click',function(){setMenu(!menuOpen)}); document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&menuOpen){setMenu(false);toggle.focus();} }); document.addEventListener('click',function(e){if(menuOpen&&!head.contains(e.target)){setMenu(false)}}); $$('#menu a').forEach(function(a){a.addEventListener('click',function(){setMenu(false)})}); /* ---- FAQ accordion (native buttons: Enter & Space work for free) ---- */ $$('.faq-q').forEach(function(btn){ btn.addEventListener('click',function(){ var item=btn.closest('.faq-item'); var isOpen=item.classList.toggle('is-open'); btn.setAttribute('aria-expanded',String(isOpen)); }); }); /* ---- scroll reveals ---- */ var reveals=$$('[data-reveal]'); if('IntersectionObserver' in window){ var io=new IntersectionObserver(function(entries){ entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} }); },{threshold:.15,rootMargin:'0px 0px -40px'}); reveals.forEach(function(el,i){ el.style.transitionDelay=(Math.min(i%3,2)*90)+'ms'; io.observe(el); }); }else{ reveals.forEach(function(el){el.classList.add('in')}); } /* ---- hero brew demo (×8 time-lapse) ---- */ var stage=$('.device-stage'),timeEl=$('#dialTime'),teaEl=$('#dialTea'), ring=$('#ringProgress'),brewBtn=$('#brewBtn'),statusEl=$('#brewStatus'); var TEAS={ sencha: {label:'SENCHA', sec:120}, oolong: {label:'ROCK OOLONG', sec:300}, chamomile:{label:'CHAMOMILE', sec:180} }; var SPEED=8,tickMs=1000/SPEED; var tea='sencha',total=TEAS.sencha.sec,remaining=total,running=false,timer=null,doneT=null,actx=null; function fmt(s){ var m=Math.floor(s/60),r=s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; } function render(){ timeEl.textContent=fmt(Math.max(remaining,0)); ring.style.strokeDashoffset=(total?((total-remaining)/total*100):100); } function ding(){ try{ var C=window.AudioContext||window.webkitAudioContext; if(!C)return; actx=actx||new C(); if(actx.state==='suspended'){actx.resume()} var t0=actx.currentTime+.03; [[880,0],[1318.5,.2]].forEach(function(n){ var o=actx.createOscillator(),g=actx.createGain(); o.type='sine';o.frequency.value=n[0]; var st=t0+n[1]; g.gain.setValueAtTime(0,st); g.gain.linearRampToValueAtTime(.25,st+.03); g.gain.exponentialRampToValueAtTime(.001,st+.55); o.connect(g);g.connect(actx.destination); o.start(st);o.stop(st+.6); }); }catch(e){/* sound is a bonus, never a blocker */} } function clearDone(){ if(doneT){clearTimeout(doneT);doneT=null;} stage.classList.remove('is-done'); if(!running){remaining=total;render();} } function start(){ if(running)return; clearDone(); total=TEAS[tea].sec;remaining=total;running=true; stage.classList.add('is-brewing');stage.classList.remove('is-done'); brewBtn.textContent='Stop the brew'; statusEl.textContent='Brewing '+TEAS[tea].label.toLowerCase()+'. Demo runs at eight times speed.'; render(); timer=setInterval(function(){ if(--remaining<=0){finish();}else{render();} },tickMs); } function stop(){ running=false;clearInterval(timer);timer=null; remaining=total; stage.classList.remove('is-brewing'); brewBtn.textContent='Brew a sample cup'; statusEl.textContent='Stopped.'; render(); } function finish(){ running=false;clearInterval(timer);timer=null;remaining=0; render(); stage.classList.add('is-done');stage.classList.remove('is-brewing'); brewBtn.textContent='Brew a sample cup'; statusEl.textContent=TEAS[tea].label.toLowerCase()+' is ready — pour.'; ding(); doneT=setTimeout(clearDone,2600); } brewBtn.addEventListener('click',function(){running?stop():start();}); $$('.chip').forEach(function(ch){ ch.addEventListener('click',function(){ tea=ch.getAttribute('data-tea'); total=TEAS[tea].sec; stage.setAttribute('data-tea',tea); teaEl.textContent=TEAS[tea].label; $$('.chip').forEach(function(c){c.setAttribute('aria-pressed',String(c===ch))}); if(running){ clearInterval(timer);remaining=total;render(); statusEl.textContent='Brewing '+TEAS[tea].label.toLowerCase()+'. Demo runs at eight times speed.'; }else{ clearDone();remaining=total;render(); } }); }); render(); /* initial 02:00 */ })(); </script> </body> </html>
